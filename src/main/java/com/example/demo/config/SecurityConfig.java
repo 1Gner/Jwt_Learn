@@ -36,7 +36,7 @@ public class SecurityConfig    {
 
 
 
-    @Bean
+   @Bean
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .addFilterAfter(new JWTFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -45,10 +45,13 @@ public class SecurityConfig    {
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/user").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         .requestMatchers("/entry/login").permitAll()
                         .requestMatchers("/user/save").permitAll()
                         .requestMatchers("/user/all").hasAnyRole("USER","MANAGER")
                         .requestMatchers("/user/{id}").permitAll()
+
+
 
 
                         .anyRequest().authenticated()
