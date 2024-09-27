@@ -16,6 +16,7 @@ public class userService {
 	@Autowired
 	private userRepository repository;
 
+	@Autowired
 	private PasswordEncoder encoder;
 
 	public user salvarUser(user User) {

@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
 
+import com.example.demo.security.JWTFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @Configuration
@@ -22,22 +24,31 @@ public class SecurityConfig    {
     @Autowired
     private SecurtityDatabase securtityService;
 
-    /*@Autowired
+    @Autowired
     public void globalUserDetail(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(securtityService).passwordEncoder(NoOpPasswordEncoder.getInstance());
-    }*/
+    }
+
+    @Bean
+    public BCryptPasswordEncoder encoder(){
+        return new BCryptPasswordEncoder();
+    }
 
 
 
     @Bean
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
+                .addFilterAfter(new JWTFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
+
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
-                        .requestMatchers("/user/all").hasAnyRole("USER", "MANAGER")
-                        .requestMatchers("/user/{id}").hasAnyRole("CHAD", "MANAGER")
+                        .requestMatchers("/user").permitAll()
+                        .requestMatchers("/entry/login").permitAll()
+                        .requestMatchers("/user/save").permitAll()
+                        .requestMatchers("/user/all").hasAnyRole("USER","MANAGER")
+                        .requestMatchers("/user/{id}").permitAll()
 
 
                         .anyRequest().authenticated()
@@ -47,5 +58,7 @@ public class SecurityConfig    {
 
         return http.build();
     }
+
+
     
 }
